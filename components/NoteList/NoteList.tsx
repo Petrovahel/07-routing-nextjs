@@ -2,7 +2,7 @@ import css from './NoteList.module.css';
 import type { Note } from '../../types/note';
 import Link from 'next/link'; 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteNote } from '@/lib/api'; // функція для видалення нотатки через API
+import { deleteNote } from '@/lib/api';
 
 interface NoteListProps {
   notes: Note[];
@@ -11,11 +11,9 @@ interface NoteListProps {
 export default function NoteList({ notes }: NoteListProps) {
   const queryClient = useQueryClient();
 
-  // Мутація для видалення нотатки
-  const { mutate, isLoading } = useMutation({
+  const deleteMutation = useMutation<Note, Error, string>({
     mutationFn: (id: string) => deleteNote(id),
     onSuccess: (_, id) => {
-      // Оновлюємо кеш локально, прибираючи видалену нотатку
       queryClient.setQueryData<Note[]>(['notes'], oldNotes =>
         oldNotes ? oldNotes.filter(note => note.id !== id) : []
       );
@@ -40,10 +38,10 @@ export default function NoteList({ notes }: NoteListProps) {
             </Link>
             <button
               className={css.button}
-              onClick={() => mutate(note.id)}
-              disabled={isLoading}
+              onClick={() => deleteMutation.mutate(note.id)}
+              disabled={deleteMutation.isPending}
             >
-              {isLoading ? 'Deleting...' : 'Delete'}
+              {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
             </button>
           </div>
         </li>
