@@ -1,27 +1,22 @@
-'use client';
-
-import { useParams } from 'next/navigation'; 
-import { useQuery } from '@tanstack/react-query';
+import { QueryClient, dehydrate } from '@tanstack/react-query';
+import NoteDetailsClient from './NoteDetails.client';
 import { fetchNoteById } from '@/lib/api';
-import type { Note } from '@/types/note';
 
-export default function NoteDetailsClient() {
-  const { id } = useParams<{ id: string }>();
+type NotePageProps = {
+  params: Promise<{ id: string }>;
+};
 
-  const { data: note, isLoading, isError } = useQuery<Note>({
+export default async function NoteDetails({ params }: NotePageProps) {
+  const { id } = await params;
+
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
     queryKey: ['note', id],
-    queryFn: () => fetchNoteById(id!),
-    enabled: !!id,
+    queryFn: () => fetchNoteById(id),
   });
 
-  if (isLoading) return <p>Loading...</p>;
-  if (isError || !note) return <p>Note not found</p>;
+  const dehydratedState = dehydrate(queryClient);
 
-  return (
-    <div>
-      <h1>{note.title}</h1>
-      <p>{note.content}</p>
-      <span>{note.tag}</span>
-    </div>
-  );
+  return <NoteDetailsClient noteId={id} dehydratedState={dehydratedState} />;
 }

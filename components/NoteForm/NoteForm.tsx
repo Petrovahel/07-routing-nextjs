@@ -4,6 +4,8 @@ import css from './NoteForm.module.css';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createNote } from '../../lib/api';
 
+
+
 interface NoteFormValues {
   title: string;
   content: string;
@@ -33,13 +35,14 @@ const validationSchema = Yup.object({
 
 export default function NoteForm({ onClose }: NoteFormProps) {
   const queryClient = useQueryClient();
+  
 
   const createMutation = useMutation({
     mutationFn: createNote,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notes'] });
-      onClose();
-    },
+   onSuccess: () => {
+  queryClient.invalidateQueries({ queryKey: ['notes'] });
+  onClose();
+}
   });
 
   const handleSubmit = (

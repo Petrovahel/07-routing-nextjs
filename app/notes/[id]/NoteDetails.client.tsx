@@ -1,18 +1,30 @@
 'use client';
 
-import { useParams } from 'next/navigation'; 
-import { useQuery } from '@tanstack/react-query';
-import { fetchNoteById } from '@/lib/api';
+import { useQuery, useMutation, useQueryClient, QueryClient, hydrate } from '@tanstack/react-query';
+import { useState } from 'react';
+import { fetchNoteById, deleteNote } from '@/lib/api';
+import { useRouter } from 'next/navigation';
 import type { Note } from '@/types/note';
 
-export default function NoteDetailsClient() {
-  const { id } = useParams<{ id: string }>();
+interface NoteDetailsClientProps {
+  noteId: string;
+  dehydratedState: unknown;
+}
+
+export default function NoteDetailsClient({ noteId, dehydratedState }: NoteDetailsClientProps) {
+  const [queryClient] = useState(() => new QueryClient());
+  const router = useRouter();
+  const queryClientHook = useQueryClient();
+
+  hydrate(queryClient, dehydratedState);
 
   const { data: note, isLoading, isError } = useQuery<Note>({
-    queryKey: ['note', id],
-    queryFn: () => fetchNoteById(id!),
-    enabled: !!id, 
+    queryKey: ['note', noteId],
+    queryFn: () => fetchNoteById(noteId),
+    enabled: !!noteId,
+    refetchOnMount: false,
   });
+
 
   if (isLoading) return <p>Loading...</p>;
   if (isError || !note) return <p>Note not found</p>;
