@@ -23,7 +23,7 @@ import css from './NotesPage.module.css';
 
 type NotesClientProps = {
   tag: string;
-  dehydratedState: DehydratedState | null;
+  dehydratedState?: DehydratedState | null;
 };
 
 export default function NotesClient({ tag, dehydratedState }: NotesClientProps) {
