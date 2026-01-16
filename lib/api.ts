@@ -46,3 +46,29 @@ export async function fetchNoteById(id: string): Promise<Note> {
   return response.data;
 }
 
+
+export const getTags = async () => {
+  const res = await axios<NoteTag[]>('/tags');
+  return res.data;
+};
+
+export async function fetchNotesByTag(
+  page: number,
+  perPage: number,
+  search?: string,
+  tag?: string
+) {
+  const res = await axios.get(`${BASE_URL}/notes`, {
+    headers: getAuthHeaders(),
+    params: {
+      page,
+      perPage,
+      ...(search ? { search } : {}),
+      ...(tag ? { tag } : {}),
+    },
+  });
+
+  return res.data; 
+
+}
+
