@@ -16,11 +16,11 @@ function getAuthHeaders() {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-export function fetchNotes(page: number, perPage: number, search?: string) {
+export function fetchNotes(page: number, perPage: number, search?: string, tag?: string) {
   return axios
     .get<{ notes: Note[]; totalPages: number }>(`${BASE_URL}/notes`, {
       headers: getAuthHeaders(),
-      params: { page, perPage, ...(search ? { search } : {}) },
+      params: { page, perPage, ...(search ? { search } : {}), ...(tag ? { tag } : {}) },
     })
     .then(res => res.data);
 }
@@ -47,28 +47,4 @@ export async function fetchNoteById(id: string): Promise<Note> {
 }
 
 
-export const getTags = async () => {
-  const res = await axios<NoteTag[]>('/tags');
-  return res.data;
-};
-
-export async function fetchNotesByTag(
-  page: number,
-  perPage: number,
-  search?: string,
-  tag?: string
-) {
-  const res = await axios.get(`${BASE_URL}/notes`, {
-    headers: getAuthHeaders(),
-    params: {
-      page,
-      perPage,
-      ...(search ? { search } : {}),
-      ...(tag ? { tag } : {}),
-    },
-  });
-
-  return res.data; 
-
-}
 
