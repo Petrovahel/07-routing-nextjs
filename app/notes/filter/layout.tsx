@@ -6,12 +6,11 @@ interface NotesLayoutProps {
     modal?: React.ReactNode;  
 }
 
-const NotesLayout = ({ children, sidebar, modal }: NotesLayoutProps) => {
+const NotesLayout = ({ children, sidebar }: NotesLayoutProps) => {
     return (
         <section className={css.container}>
             <aside className={css.sidebar}>{sidebar}</aside>
-            <div className={css.notesWrapper}>{children}</div>
-            {modal} 
+            <div className={css.notesWrapper}>{children}</div> 
         </section>
     );
 };
